@@ -1,0 +1,84 @@
+FAIL tests/user.test.js
+  ΓùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (4) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      MongoDB Connected: ac-ugqibey-shard-00-02.hspkcrn.mongodb.net
+
+      at log (src/config/db.js:6:13)
+
+  ΓùÅ User API ΓÇ║ should get current user profile
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: 200
+    Received: 404
+
+      25 |       .set('Authorization', `Bearer ${token}`);
+      26 |     
+    > 27 |     expect(res.statusCode).toEqual(200);
+         |                            ^
+      28 |     expect(res.body).toHaveProperty('email', 'test@example.com');
+      29 |     expect(res.body).toHaveProperty('name', 'Test User');
+      30 |   });
+
+      at Object.toEqual (tests/user.test.js:27:28)
+
+  ΓùÅ User API ΓÇ║ should deny access without token
+
+    expect(received).toEqual(expected) // deep equality
+
+    Expected: 401
+    Received: 404
+
+      34 |       .get('/api/users/profile');
+      35 |     
+    > 36 |     expect(res.statusCode).toEqual(401);
+         |                            ^
+      37 |   });
+      38 | });
+      39 |
+
+      at Object.toEqual (tests/user.test.js:36:28)
+
+FAIL tests/auth.test.js
+  ΓùÅ Console
+
+    console.log
+      [dotenv@17.3.1] injecting env (4) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+
+      at _log (node_modules/dotenv/lib/main.js:139:11)
+
+    console.log
+      MongoDB Connected: ac-ugqibey-shard-00-00.hspkcrn.mongodb.net
+
+      at log (src/config/db.js:6:13)
+
+  ΓùÅ Auth API ΓÇ║ should not register user with existing email
+
+    expect(received).toHaveProperty(path, value)
+
+    Expected path: "message"
+
+    Expected value: "User already exists"
+    Received value: "User already exists with this email"
+
+      40 |     
+      41 |     expect(res.statusCode).toEqual(400);
+    > 42 |     expect(res.body).toHaveProperty('message', 'User already exists');
+         |                      ^
+      43 |   });
+      44 |
+      45 |   it('should login an existing user', async () => {
+
+      at Object.toHaveProperty (tests/auth.test.js:42:22)
+
+Test Suites: 2 failed, 2 total
+Tests:       3 failed, 2 passed, 5 total
+Snapshots:   0 total
+Time:        3.681 s, estimated 4 s
+Ran all test suites matching tests/auth.test.js|tests/user.test.js.
