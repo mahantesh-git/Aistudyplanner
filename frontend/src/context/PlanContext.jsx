@@ -34,7 +34,10 @@ export const PlanProvider = ({ children }) => {
   const generatePlan = async () => {
     setLoading(true);
     try {
-      const res = await api.post('/study-plan/generate');
+      const res = await api.post('/study-plan/generate', {
+        date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        overwrite: true // Overwrite existing auto-generated tasks for today
+      });
       console.log(res.data);
       setPlan(res.data);
       setError(null);

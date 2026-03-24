@@ -46,10 +46,10 @@ const TasksPage = () => {
   const openEdit = (task) => {
     setEditTask(task);
     setForm({
-      title: task.title,
+      title: task.title || task.topic || '',
       description: task.description || '',
       priority: task.priority || 2,
-      dueDate: task.dueDate ? task.dueDate.slice(0, 10) : '',
+      dueDate: task.deadline ? task.deadline.slice(0, 10) : '',
     });
     setShowForm(true);
   };
@@ -69,7 +69,7 @@ const TasksPage = () => {
         title: form.title.trim(),
         description: form.description.trim(),
         priority: Number(form.priority),
-        ...(form.dueDate ? { dueDate: form.dueDate } : {}),
+        ...(form.dueDate ? { deadline: form.dueDate } : {}),
       };
       if (editTask) {
         await updateTask(editTask._id, payload);
@@ -87,12 +87,20 @@ const TasksPage = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this task?')) return;
-    try { await deleteTask(id); } catch { /* ignore */ }
+    try {
+      await deleteTask(id);
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
   };
 
   const handleStatusCycle = async (task) => {
     const next = task.status === 'pending' ? 'completed' : task.status === 'completed' ? 'skipped' : 'pending';
-    try { await updateTaskStatus(task._id, next); } catch { /* ignore */ }
+    try {
+      await updateTaskStatus(task._id, next);
+    } catch (err) {
+      console.error('Status update failed:', err);
+    }
   };
 
   const filtered = filter === 'all' ? tasks : tasks.filter(t => t.status === filter);
@@ -200,7 +208,7 @@ const TasksPage = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <p className={`font-medium text-gray-900 ${task.status === 'completed' ? 'line-through text-gray-400' : ''}`}>
-                    {task.title}
+                    {task.title || task.topic}
                   </p>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[task.status] || STATUS_COLORS.pending}`}>
                     {task.status}
@@ -214,9 +222,9 @@ const TasksPage = () => {
                 {task.description && (
                   <p className="text-sm text-gray-500 truncate">{task.description}</p>
                 )}
-                {task.dueDate && (
+                {task.deadline && (
                   <p className="text-xs text-gray-400 mt-1">
-                    Due: {new Date(task.dueDate).toLocaleDateString()}
+                    Due: {new Date(task.deadline).toLocaleDateString()}
                   </p>
                 )}
               </div>

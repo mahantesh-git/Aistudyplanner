@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useCallback } from 'react';
 import api from '../utils/api';
 import { AuthContext } from './AuthContext';
+import { normalizeTask, normalizeTasks, prepareTaskForBackend } from '../utils/taskUtils';
+import { createErrorFromResponse } from '../utils/errorUtils';
 
 export const TaskContext = createContext();
 
@@ -16,10 +18,12 @@ export const TaskProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await api.get('/tasks');
-      setTasks(res.data);
+      const normalizedTasks = normalizeTasks(res.data);
+      setTasks(normalizedTasks);
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch tasks');
+      const error = createErrorFromResponse(err);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -28,11 +32,14 @@ export const TaskProvider = ({ children }) => {
   // POST /api/tasks
   const addTask = async (taskData) => {
     try {
-      const res = await api.post('/tasks', taskData);
-      setTasks(prev => [...prev, res.data]);
-      return res.data;
+      const backendData = prepareTaskForBackend(taskData);
+      const res = await api.post('/tasks', backendData);
+      const normalizedTask = normalizeTask(res.data);
+      setTasks(prev => [...prev, normalizedTask]);
+      return normalizedTask;
     } catch (err) {
-      throw err.response?.data?.message || 'Failed to add task';
+      const error = createErrorFromResponse(err);
+      throw error;
     }
   };
 
@@ -42,11 +49,14 @@ export const TaskProvider = ({ children }) => {
   // PUT /api/tasks/:id
   const updateTask = async (id, updates) => {
     try {
-      const res = await api.put(`/tasks/${id}`, updates);
-      setTasks(prev => prev.map(t => (t._id === id ? res.data : t)));
-      return res.data;
+      const backendUpdates = prepareTaskForBackend(updates);
+      const res = await api.put(`/tasks/${id}`, backendUpdates);
+      const normalizedTask = normalizeTask(res.data);
+      setTasks(prev => prev.map(t => (t._id === id ? normalizedTask : t)));
+      return normalizedTask;
     } catch (err) {
-      throw err.response?.data?.message || 'Failed to update task';
+      const error = createErrorFromResponse(err);
+      throw error;
     }
   };
 
@@ -61,10 +71,12 @@ export const TaskProvider = ({ children }) => {
   const completeTask = async (id) => {
     try {
       const res = await api.patch(`/tasks/${id}/complete`);
-      setTasks(prev => prev.map(t => (t._id === id ? res.data : t)));
-      return res.data;
+      const normalizedTask = normalizeTask(res.data);
+      setTasks(prev => prev.map(t => (t._id === id ? normalizedTask : t)));
+      return normalizedTask;
     } catch (err) {
-      throw err.response?.data?.message || 'Failed to complete task';
+      const error = createErrorFromResponse(err);
+      throw error;
     }
   };
 
@@ -74,7 +86,8 @@ export const TaskProvider = ({ children }) => {
       await api.delete(`/tasks/${id}`);
       setTasks(prev => prev.filter(t => t._id !== id));
     } catch (err) {
-      throw err.response?.data?.message || 'Failed to delete task';
+      const error = createErrorFromResponse(err);
+      throw error;
     }
   };
 

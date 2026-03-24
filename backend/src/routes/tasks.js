@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const { validateTaskInput, validateDateQuery } = require('../middleware/validation');
 const {
   getTasks,
   getTask,
@@ -12,10 +13,10 @@ const {
 
 router.use(protect);
 
-router.get('/', getTasks);
+router.get('/', validateDateQuery, getTasks);
 router.get('/:id', getTask);
-router.post('/', createTask);
-router.put('/:id', updateTask);
+router.post('/', validateTaskInput, createTask);
+router.put('/:id', validateTaskInput, updateTask);
 router.delete('/:id', deleteTask);
 router.patch('/:id/complete', completeTask);
 

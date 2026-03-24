@@ -28,6 +28,24 @@ app.get('/api/health', (req, res) =>
   res.json({ status: 'ok', time: new Date().toISOString() })
 );
 
+// Simple test route
+app.get('/api/test-tasks', (req, res) => {
+  console.log('Test route called!');
+  res.json({ message: 'Test route working', timestamp: new Date() });
+});
+
+// Debug route
+app.get('/api/debug', (req, res) => {
+  console.log('Debug route called!');
+  res.json({ message: 'Debug endpoint working' });
+});
+
+// Test POST route
+app.post('/api/test', (req, res) => {
+  console.log('Test POST route called!', req.body);
+  res.json({ message: 'Test POST working', body: req.body });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.url} not found` });
