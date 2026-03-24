@@ -121,7 +121,11 @@ const updateTask = async (req, res) => {
     if (completed !== undefined) updateData.completed = completed;
     if (taskDeadline !== undefined) updateData.deadline = taskDeadline;
     if (priority !== undefined) updateData.priority = priority;
-    if (status !== undefined) updateData.status = status;
+    if (status !== undefined) {
+      updateData.status = status;
+      // Sync completed field with status
+      updateData.completed = status === 'completed';
+    }
     
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },

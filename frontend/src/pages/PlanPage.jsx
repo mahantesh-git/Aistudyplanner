@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const PlanPage = () => {
   const { plans, loading: plansLoading, fetchPlans, generatePlan, startSession, completeStudySession } = useContext(PlanContext);
-  const { tasks, loading: tasksLoading, fetchTasks, updateTaskStatus } = useContext(TaskContext);
+  const { tasks, loading: tasksLoading, fetchTasks, updateTaskStatus, completeTask } = useContext(TaskContext);
   const [activePlan, setActivePlan] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [sessionActive, setSessionActive] = useState(false);
@@ -171,7 +171,7 @@ const PlanPage = () => {
                           {task.topic && <p className="text-xs text-gray-500 mt-1">{task.topic.title}</p>}
                         </div>
                         <button
-                          onClick={() => updateTaskStatus(task._id, 'completed', 4)}
+                          onClick={() => completeTask(task._id)}
                           className="text-emerald-600 hover:bg-emerald-50 px-3 py-1 rounded border border-emerald-200 text-sm transition"
                         >
                           Mark Complete
